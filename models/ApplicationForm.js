@@ -67,10 +67,16 @@ const applicationFormSchema = new mongoose.Schema({
     }
   },
   program: {
+    country: {
+      type: String,
+      required: [true, 'Country selection is required'],
+      enum: ['china', 'hungary', 'italy'],
+      trim: true
+    },
     degreeLevel: {
       type: String,
       required: [true, 'Degree level is required'],
-      enum: ['bachelors', 'masters', 'phd', 'mbbs', 'diploma', 'certificate'],
+      enum: ['bachelor', 'bachelors', 'master', 'masters', 'phd', 'mbbs', 'diploma', 'certificate'],
       trim: true
     },
     preferredProgram: {
@@ -111,7 +117,7 @@ const applicationFormSchema = new mongoose.Schema({
   additional: {
     scholarshipInterest: {
       type: String,
-      enum: ['yes', 'no', 'maybe'],
+      enum: ['full', 'partial', 'any', 'none'],
       trim: true
     },
     personalStatement: {

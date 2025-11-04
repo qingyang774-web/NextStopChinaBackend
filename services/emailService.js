@@ -5,12 +5,26 @@ const defaultClient = brevo.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
 apiKey.apiKey = process.env.BREVO_API_KEY;
 
+// Validate that BREVO_API_KEY is set
+if (!process.env.BREVO_API_KEY) {
+  console.warn('⚠️  WARNING: BREVO_API_KEY is not set in environment variables. Email functionality will not work.');
+}
+
 const apiInstance = new brevo.TransactionalEmailsApi();
 
 class EmailService {
   constructor() {
     this.fromEmail = process.env.FROM_EMAIL || 'noreply@nextstopchina.com';
     this.adminEmail = process.env.ADMIN_EMAIL || 'admin@nextstopchina.com';
+    
+    // Check if email service is properly configured
+    if (!process.env.BREVO_API_KEY) {
+      console.warn('⚠️  Email Service: BREVO_API_KEY is missing. Emails will fail to send.');
+    } else {
+      console.log('✅ Email Service: Configuration loaded successfully');
+      console.log(`   From Email: ${this.fromEmail}`);
+      console.log(`   Admin Email: ${this.adminEmail}`);
+    }
   }
 
   /**
@@ -114,6 +128,27 @@ class EmailService {
       return result;
     } catch (error) {
       console.error('Error sending newsletter confirmation email:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Send newsletter subscription notification email to admin
+   */
+  async sendNewsletterNotificationToAdmin(subscriptionData) {
+    try {
+      const sendSmtpEmail = new brevo.SendSmtpEmail();
+      
+      sendSmtpEmail.subject = `New Newsletter Subscription - ${subscriptionData.email}`;
+      sendSmtpEmail.htmlContent = this.getNewsletterAdminTemplate(subscriptionData);
+      sendSmtpEmail.sender = { name: 'Next Stop China', email: this.fromEmail };
+      sendSmtpEmail.to = [{ email: this.adminEmail, name: 'Admin' }];
+
+      const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+      console.log('Newsletter notification email sent to admin:', result);
+      return result;
+    } catch (error) {
+      console.error('Error sending newsletter notification to admin:', error);
       throw error;
     }
   }
@@ -433,6 +468,49 @@ class EmailService {
           <p>© 2025 Next Stop China. All rights reserved.</p>
           <p>Making education dreams come true.</p>
           <p><a href="#">Unsubscribe</a> | <a href="#">Update Preferences</a></p>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  /**
+   * Newsletter admin notification template
+   */
+  getNewsletterAdminTemplate(subscriptionData) {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>New Newsletter Subscription</title>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: #17a2b8; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+          .info-box { background: #e8f4fd; padding: 15px; border-left: 4px solid #667eea; margin: 15px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>New Newsletter Subscription</h1>
+        </div>
+        <div class="content">
+          <div class="info-box">
+            <h3>Subscription Details:</h3>
+            <p><strong>Email:</strong> ${subscriptionData.email}</p>
+            <p><strong>Source:</strong> ${subscriptionData.source || 'homepage'}</p>
+            <p><strong>Status:</strong> ${subscriptionData.status || 'active'}</p>
+            <p><strong>Subscribed:</strong> ${new Date(subscriptionData.createdAt || Date.now()).toLocaleString()}</p>
+          </div>
+          
+          <div class="info-box">
+            <h3>Submission Details:</h3>
+            <p><strong>IP Address:</strong> ${subscriptionData.ipAddress || 'Not available'}</p>
+            <p><strong>User Agent:</strong> ${subscriptionData.userAgent || 'Not available'}</p>
+          </div>
+          
+          <p><strong>Note:</strong> A welcome email has been sent to the subscriber.</p>
         </div>
       </body>
       </html>

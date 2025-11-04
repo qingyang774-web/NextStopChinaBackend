@@ -106,7 +106,8 @@ router.post('/application', [
   body('academic.gpa').optional().trim().isLength({ max: 10 }).withMessage('GPA format invalid'),
   body('academic.graduationYear').optional().trim().isLength({ max: 4 }).withMessage('Graduation year invalid'),
   body('academic.fieldOfStudy').optional().trim().isLength({ max: 100 }).withMessage('Field of study too long'),
-  body('program.degreeLevel').isIn(['bachelors', 'masters', 'phd', 'mbbs', 'diploma', 'certificate']).withMessage('Valid degree level is required'),
+  body('program.country').isIn(['china', 'hungary', 'italy']).withMessage('Valid country selection is required'),
+  body('program.degreeLevel').isIn(['bachelor', 'bachelors', 'master', 'masters', 'phd', 'mbbs', 'diploma', 'certificate']).withMessage('Valid degree level is required'),
   body('program.preferredProgram').trim().isLength({ min: 1, max: 100 }).withMessage('Preferred program is required'),
   body('program.preferredUniversity').optional().trim().isLength({ max: 200 }).withMessage('University name too long'),
   body('program.startDate').trim().isLength({ min: 1 }).withMessage('Start date is required'),
@@ -114,7 +115,7 @@ router.post('/application', [
   body('documents.passport').optional().isBoolean().withMessage('Passport must be boolean'),
   body('documents.languageTest').optional().isBoolean().withMessage('Language test must be boolean'),
   body('documents.recommendation').optional().isBoolean().withMessage('Recommendation must be boolean'),
-  body('additional.scholarshipInterest').optional().isIn(['yes', 'no', 'maybe']).withMessage('Invalid scholarship interest'),
+  body('additional.scholarshipInterest').optional().isIn(['full', 'partial', 'any', 'none']).withMessage('Invalid scholarship interest'),
   body('additional.personalStatement').optional().trim().isLength({ max: 2000 }).withMessage('Personal statement too long'),
   body('additional.previousExperience').optional().trim().isLength({ max: 1000 }).withMessage('Previous experience too long'),
   handleValidationErrors
@@ -200,11 +201,14 @@ router.post('/newsletter', [
         existingSubscription.source = source;
         existingSubscription.unsubscribedAt = undefined;
         existingSubscription.lastEmailSent = new Date();
-        await existingSubscription.save();
+        const reactivatedSubscription = await existingSubscription.save();
 
         // Send confirmation email
         try {
-          await emailService.sendNewsletterConfirmation(email);
+          await Promise.all([
+            emailService.sendNewsletterConfirmation(email),
+            emailService.sendNewsletterNotificationToAdmin(reactivatedSubscription)
+          ]);
         } catch (emailError) {
           console.error('Email sending failed:', emailError);
         }
@@ -225,11 +229,14 @@ router.post('/newsletter', [
       lastEmailSent: new Date()
     });
 
-    await newsletterSubscription.save();
+    const savedSubscription = await newsletterSubscription.save();
 
-    // Send confirmation email
+    // Send emails to both user and admin
     try {
-      await emailService.sendNewsletterConfirmation(email);
+      await Promise.all([
+        emailService.sendNewsletterConfirmation(email),
+        emailService.sendNewsletterNotificationToAdmin(savedSubscription)
+      ]);
     } catch (emailError) {
       console.error('Email sending failed:', emailError);
       // Don't fail the request if email fails, just log it
