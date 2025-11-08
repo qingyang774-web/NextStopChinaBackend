@@ -14,8 +14,8 @@ const apiInstance = new brevo.TransactionalEmailsApi();
 
 class EmailService {
   constructor() {
-    this.fromEmail = process.env.FROM_EMAIL || 'noreply@nextstopchina.com';
-    this.adminEmail = process.env.ADMIN_EMAIL || 'admin@nextstopchina.com';
+    this.fromEmail = process.env.FROM_EMAIL || 'noreply@manarascholars.com';
+    this.adminEmail = process.env.ADMIN_EMAIL || 'admin@manarascholars.com';
     
     // Check if email service is properly configured
     console.log('📧 [EMAIL SERVICE] Initializing email service...');
@@ -45,9 +45,9 @@ class EmailService {
       
       const sendSmtpEmail = new brevo.SendSmtpEmail();
       
-      sendSmtpEmail.subject = 'Thank you for contacting Next Stop China!';
+      sendSmtpEmail.subject = 'Thank you for contacting ManaraScholars!';
       sendSmtpEmail.htmlContent = this.getContactFormConfirmationTemplate(contactData);
-      sendSmtpEmail.sender = { name: 'Next Stop China', email: this.fromEmail };
+      sendSmtpEmail.sender = { name: 'ManaraScholars', email: this.fromEmail };
       sendSmtpEmail.to = [{ email: contactData.email, name: `${contactData.firstName} ${contactData.lastName}` }];
 
       console.log('📧 [EMAIL] Sending contact form confirmation email via Brevo...');
@@ -79,7 +79,7 @@ class EmailService {
       
       sendSmtpEmail.subject = `New Contact Form Submission - ${contactData.firstName} ${contactData.lastName}`;
       sendSmtpEmail.htmlContent = this.getContactFormAdminTemplate(contactData);
-      sendSmtpEmail.sender = { name: 'Next Stop China', email: this.fromEmail };
+      sendSmtpEmail.sender = { name: 'ManaraScholars', email: this.fromEmail };
       sendSmtpEmail.to = [{ email: this.adminEmail, name: 'Admin' }];
 
       console.log('📧 [EMAIL] Sending contact form notification email to admin via Brevo...');
@@ -110,9 +110,9 @@ class EmailService {
       
       const sendSmtpEmail = new brevo.SendSmtpEmail();
       
-      sendSmtpEmail.subject = 'Application Received - Next Stop China';
+      sendSmtpEmail.subject = 'Application Received - ManaraScholars';
       sendSmtpEmail.htmlContent = this.getApplicationFormConfirmationTemplate(applicationData);
-      sendSmtpEmail.sender = { name: 'Next Stop China', email: this.fromEmail };
+      sendSmtpEmail.sender = { name: 'ManaraScholars', email: this.fromEmail };
       sendSmtpEmail.to = [{ email: applicationData.personalInfo.email, name: `${applicationData.personalInfo.firstName} ${applicationData.personalInfo.lastName}` }];
 
       console.log('📧 [EMAIL] Sending application form confirmation email via Brevo...');
@@ -146,7 +146,7 @@ class EmailService {
       
       sendSmtpEmail.subject = `New Application Submission - ${applicationData.personalInfo.firstName} ${applicationData.personalInfo.lastName}`;
       sendSmtpEmail.htmlContent = this.getApplicationFormAdminTemplate(applicationData);
-      sendSmtpEmail.sender = { name: 'Next Stop China', email: this.fromEmail };
+      sendSmtpEmail.sender = { name: 'ManaraScholars', email: this.fromEmail };
       sendSmtpEmail.to = [{ email: this.adminEmail, name: 'Admin' }];
 
       console.log('📧 [EMAIL] Sending application form notification email to admin via Brevo...');
@@ -175,9 +175,9 @@ class EmailService {
       
       const sendSmtpEmail = new brevo.SendSmtpEmail();
       
-      sendSmtpEmail.subject = 'Welcome to Next Stop China Newsletter!';
+      sendSmtpEmail.subject = 'Welcome to ManaraScholars Newsletter!';
       sendSmtpEmail.htmlContent = this.getNewsletterConfirmationTemplate();
-      sendSmtpEmail.sender = { name: 'Next Stop China', email: this.fromEmail };
+      sendSmtpEmail.sender = { name: 'ManaraScholars', email: this.fromEmail };
       sendSmtpEmail.to = [{ email: email, name: 'Subscriber' }];
 
       console.log('📧 [EMAIL] Sending newsletter confirmation email via Brevo...');
@@ -210,7 +210,7 @@ class EmailService {
       
       sendSmtpEmail.subject = `New Newsletter Subscription - ${subscriptionData.email}`;
       sendSmtpEmail.htmlContent = this.getNewsletterAdminTemplate(subscriptionData);
-      sendSmtpEmail.sender = { name: 'Next Stop China', email: this.fromEmail };
+      sendSmtpEmail.sender = { name: 'ManaraScholars', email: this.fromEmail };
       sendSmtpEmail.to = [{ email: this.adminEmail, name: 'Admin' }];
 
       console.log('📧 [EMAIL] Sending newsletter notification email to admin via Brevo...');
@@ -249,7 +249,7 @@ class EmailService {
       </head>
       <body>
         <div class="header">
-          <h1>Thank You for Contacting Next Stop China!</h1>
+          <h1>Thank You for Contacting ManaraScholars!</h1>
         </div>
         <div class="content">
           <p>Dear ${contactData.firstName},</p>
@@ -278,14 +278,14 @@ class EmailService {
           <ul>
             <li>Phone: +1 (555) 123-4567</li>
             <li>WhatsApp: +1 (555) 123-4567</li>
-            <li>Email: info@nextstopchina.com</li>
+            <li>Email: info@manarascholars.com</li>
           </ul>
           
           <p>Best regards,<br>
-          The Next Stop China Team</p>
+          The ManaraScholars Team</p>
         </div>
         <div class="footer">
-          <p>© 2025 Next Stop China. All rights reserved.</p>
+          <p>© 2025 ManaraScholars. All rights reserved.</p>
           <p>Making education dreams come true.</p>
         </div>
       </body>
@@ -353,7 +353,7 @@ class EmailService {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Application Received - Next Stop China</title>
+        <title>Application Received - ManaraScholars</title>
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
           .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
@@ -369,7 +369,7 @@ class EmailService {
         <div class="content">
           <p>Dear ${applicationData.personalInfo.firstName},</p>
           
-          <p>Thank you for submitting your application to Next Stop China! We have received your application and our team will review it carefully.</p>
+          <p>Thank you for submitting your application to ManaraScholars! We have received your application and our team will review it carefully.</p>
           
           <div class="highlight">
             <strong>Application Summary:</strong><br>
@@ -394,10 +394,10 @@ class EmailService {
           <p>We will keep you updated throughout the process. If you have any questions or need to submit additional documents, please don't hesitate to contact us.</p>
           
           <p>Best regards,<br>
-          The Next Stop China Admissions Team</p>
+          The ManaraScholars Admissions Team</p>
         </div>
         <div class="footer">
-          <p>© 2025 Next Stop China. All rights reserved.</p>
+          <p>© 2025 ManaraScholars. All rights reserved.</p>
           <p>Making education dreams come true.</p>
         </div>
       </body>
@@ -500,7 +500,7 @@ class EmailService {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Welcome to Next Stop China Newsletter!</title>
+        <title>Welcome to ManaraScholars Newsletter!</title>
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
           .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
@@ -511,7 +511,7 @@ class EmailService {
       </head>
       <body>
         <div class="header">
-          <h1>Welcome to Next Stop China!</h1>
+          <h1>Welcome to ManaraScholars!</h1>
         </div>
         <div class="content">
           <p>Thank you for subscribing to our newsletter!</p>
@@ -537,10 +537,10 @@ class EmailService {
           <p>If you have any questions or need assistance with your application, feel free to contact us anytime.</p>
           
           <p>Best regards,<br>
-          The Next Stop China Team</p>
+          The ManaraScholars Team</p>
         </div>
         <div class="footer">
-          <p>© 2025 Next Stop China. All rights reserved.</p>
+          <p>© 2025 ManaraScholars. All rights reserved.</p>
           <p>Making education dreams come true.</p>
           <p><a href="#">Unsubscribe</a> | <a href="#">Update Preferences</a></p>
         </div>

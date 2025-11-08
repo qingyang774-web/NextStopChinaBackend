@@ -8,7 +8,7 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 
-console.log('\n🔍 Next Stop China Backend - Setup Verification\n');
+console.log('\n🔍 ManaraScholars Backend - Setup Verification\n');
 console.log('=' .repeat(60));
 
 let hasErrors = false;

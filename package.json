@@ -1,7 +1,7 @@
 {
-  "name": "next-stop-china-backend",
+  "name": "manara-scholars-backend",
   "version": "1.0.0",
-  "description": "Backend API for Next Stop China Education Consultancy",
+  "description": "Backend API for ManaraScholars Education Consultancy",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,7 +9,7 @@
     "test": "jest"
   },
   "keywords": ["education", "china", "scholarships", "api"],
-  "author": "Next Stop China",
+  "author": "ManaraScholars",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",

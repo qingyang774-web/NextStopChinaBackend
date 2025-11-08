@@ -1,6 +1,6 @@
 # Backend Setup Guide
 
-This guide will help you set up the Next Stop China backend API with MongoDB and Brevo email service.
+This guide will help you set up the ManaraScholars backend API with MongoDB and Brevo email service.
 
 ## Prerequisites
 
@@ -26,9 +26,9 @@ cp .env.example .env
 
 ```env
 # Database
-MONGODB_URI=mongodb://localhost:27017/next-stop-china
+MONGODB_URI=mongodb://localhost:27017/manara-scholars
 # OR for MongoDB Atlas:
-# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/next-stop-china
+# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/manara-scholars
 
 # Server
 PORT=5000
@@ -36,8 +36,8 @@ NODE_ENV=development
 
 # Brevo Email Configuration
 BREVO_API_KEY=your_brevo_api_key_here
-ADMIN_EMAIL=admin@nextstopchina.com
-FROM_EMAIL=noreply@nextstopchina.com
+ADMIN_EMAIL=admin@manarascholars.com
+FROM_EMAIL=noreply@manarascholars.com
 
 # Frontend URL
 FRONTEND_URL=http://localhost:3000
@@ -72,7 +72,7 @@ RATE_LIMIT_MAX_REQUESTS=100
 ### Brevo Configuration
 - **Admin Email**: The email address where form notifications will be sent
 - **From Email**: The email address that will appear as the sender (must be verified in Brevo)
-- **Sender Name**: Will appear as "Next Stop China" in emails
+- **Sender Name**: Will appear as "ManaraScholars" in emails
 
 ## Step 5: Start the Server
 
