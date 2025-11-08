@@ -41,7 +41,11 @@ router.post('/contact', [
   handleValidationErrors
 ], async (req, res) => {
   try {
+    console.log('📝 [FORM] Contact form submission received');
+    console.log('📝 [FORM] Data:', JSON.stringify(req.body, null, 2));
+    
     const clientInfo = getClientInfo(req);
+    console.log('📝 [FORM] Client Info:', clientInfo);
     
     // Create contact form submission
     const contactForm = new ContactForm({
@@ -50,15 +54,19 @@ router.post('/contact', [
     });
 
     const savedContact = await contactForm.save();
+    console.log('✅ [FORM] Contact form saved to database:', savedContact._id);
 
     // Send emails
     try {
+      console.log('📧 [FORM] Starting email sending process for contact form...');
       await Promise.all([
         emailService.sendContactFormConfirmation(savedContact),
         emailService.sendContactFormNotificationToAdmin(savedContact)
       ]);
+      console.log('✅ [FORM] Both emails sent successfully (user + admin)');
     } catch (emailError) {
-      console.error('Email sending failed:', emailError);
+      console.error('❌ [FORM] Email sending failed:', emailError);
+      console.error('❌ [FORM] Error details:', emailError.message);
       // Don't fail the request if email fails, just log it
     }
 
@@ -110,7 +118,7 @@ router.post('/application', [
   body('program.degreeLevel').isIn(['bachelor', 'bachelors', 'master', 'masters', 'phd', 'mbbs', 'diploma', 'certificate']).withMessage('Valid degree level is required'),
   body('program.preferredProgram').trim().isLength({ min: 1, max: 100 }).withMessage('Preferred program is required'),
   body('program.preferredUniversity').optional().trim().isLength({ max: 200 }).withMessage('University name too long'),
-  body('program.startDate').trim().isLength({ min: 1 }).withMessage('Start date is required'),
+  body('program.startDate').optional().trim().isLength({ max: 100 }).withMessage('Start date too long'),
   body('documents.transcript').optional().isBoolean().withMessage('Transcript must be boolean'),
   body('documents.passport').optional().isBoolean().withMessage('Passport must be boolean'),
   body('documents.languageTest').optional().isBoolean().withMessage('Language test must be boolean'),
@@ -121,7 +129,11 @@ router.post('/application', [
   handleValidationErrors
 ], async (req, res) => {
   try {
+    console.log('📝 [FORM] Application form submission received');
+    console.log('📝 [FORM] Data:', JSON.stringify(req.body, null, 2));
+    
     const clientInfo = getClientInfo(req);
+    console.log('📝 [FORM] Client Info:', clientInfo);
     
     // Create application form submission
     const applicationForm = new ApplicationForm({
@@ -130,15 +142,21 @@ router.post('/application', [
     });
 
     const savedApplication = await applicationForm.save();
+    console.log('✅ [FORM] Application form saved to database:', savedApplication._id);
+    console.log('📝 [FORM] Applicant:', `${savedApplication.personalInfo.firstName} ${savedApplication.personalInfo.lastName}`);
+    console.log('📝 [FORM] Program:', savedApplication.program.preferredProgram);
 
     // Send emails
     try {
+      console.log('📧 [FORM] Starting email sending process for application form...');
       await Promise.all([
         emailService.sendApplicationFormConfirmation(savedApplication),
         emailService.sendApplicationFormNotificationToAdmin(savedApplication)
       ]);
+      console.log('✅ [FORM] Both emails sent successfully (user + admin)');
     } catch (emailError) {
-      console.error('Email sending failed:', emailError);
+      console.error('❌ [FORM] Email sending failed:', emailError);
+      console.error('❌ [FORM] Error details:', emailError.message);
       // Don't fail the request if email fails, just log it
     }
 
@@ -182,6 +200,10 @@ router.post('/newsletter', [
   handleValidationErrors
 ], async (req, res) => {
   try {
+    console.log('📝 [FORM] Newsletter subscription received');
+    console.log('📝 [FORM] Email:', req.body.email);
+    console.log('📝 [FORM] Source:', req.body.source || 'homepage');
+    
     const clientInfo = getClientInfo(req);
     const { email, source = 'homepage' } = req.body;
 
@@ -190,12 +212,14 @@ router.post('/newsletter', [
     
     if (existingSubscription) {
       if (existingSubscription.status === 'active') {
+        console.log('ℹ️ [FORM] Email already subscribed:', email);
         return res.status(200).json({
           success: true,
           message: 'You are already subscribed to our newsletter!',
           data: { email, status: 'already_subscribed' }
         });
       } else if (existingSubscription.status === 'unsubscribed') {
+        console.log('🔄 [FORM] Reactivating subscription for:', email);
         // Reactivate subscription
         existingSubscription.status = 'active';
         existingSubscription.source = source;
@@ -205,12 +229,14 @@ router.post('/newsletter', [
 
         // Send confirmation email
         try {
+          console.log('📧 [FORM] Sending reactivation emails...');
           await Promise.all([
             emailService.sendNewsletterConfirmation(email),
             emailService.sendNewsletterNotificationToAdmin(reactivatedSubscription)
           ]);
+          console.log('✅ [FORM] Reactivation emails sent successfully');
         } catch (emailError) {
-          console.error('Email sending failed:', emailError);
+          console.error('❌ [FORM] Email sending failed:', emailError);
         }
 
         return res.status(200).json({
@@ -222,6 +248,7 @@ router.post('/newsletter', [
     }
 
     // Create new subscription
+    console.log('📝 [FORM] Creating new newsletter subscription');
     const newsletterSubscription = new NewsletterSubscription({
       email,
       source,
@@ -230,15 +257,19 @@ router.post('/newsletter', [
     });
 
     const savedSubscription = await newsletterSubscription.save();
+    console.log('✅ [FORM] Newsletter subscription saved to database:', savedSubscription._id);
 
     // Send emails to both user and admin
     try {
+      console.log('📧 [FORM] Starting email sending process for newsletter subscription...');
       await Promise.all([
         emailService.sendNewsletterConfirmation(email),
         emailService.sendNewsletterNotificationToAdmin(savedSubscription)
       ]);
+      console.log('✅ [FORM] Both emails sent successfully (user + admin)');
     } catch (emailError) {
-      console.error('Email sending failed:', emailError);
+      console.error('❌ [FORM] Email sending failed:', emailError);
+      console.error('❌ [FORM] Error details:', emailError.message);
       // Don't fail the request if email fails, just log it
     }
 

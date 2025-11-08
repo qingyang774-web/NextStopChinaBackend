@@ -92,8 +92,9 @@ const applicationFormSchema = new mongoose.Schema({
     },
     startDate: {
       type: String,
-      required: [true, 'Preferred start date is required'],
-      trim: true
+      required: false, // Made optional since frontend field is commented out
+      trim: true,
+      default: 'Not specified'
     }
   },
   documents: {

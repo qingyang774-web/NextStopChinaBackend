@@ -18,12 +18,18 @@ class EmailService {
     this.adminEmail = process.env.ADMIN_EMAIL || 'admin@nextstopchina.com';
     
     // Check if email service is properly configured
+    console.log('📧 [EMAIL SERVICE] Initializing email service...');
+    console.log('📧 [EMAIL SERVICE] Configuration:');
+    console.log(`   From Email: ${this.fromEmail}`);
+    console.log(`   Admin Email: ${this.adminEmail}`);
+    console.log(`   BREVO_API_KEY: ${process.env.BREVO_API_KEY ? '✅ Set' : '❌ Missing'}`);
+    
     if (!process.env.BREVO_API_KEY) {
-      console.warn('⚠️  Email Service: BREVO_API_KEY is missing. Emails will fail to send.');
+      console.warn('⚠️  [EMAIL SERVICE] BREVO_API_KEY is missing. Emails will fail to send.');
+      console.warn('⚠️  [EMAIL SERVICE] Please set BREVO_API_KEY in your .env file.');
     } else {
-      console.log('✅ Email Service: Configuration loaded successfully');
-      console.log(`   From Email: ${this.fromEmail}`);
-      console.log(`   Admin Email: ${this.adminEmail}`);
+      console.log('✅ [EMAIL SERVICE] Email service configured successfully');
+      console.log('✅ [EMAIL SERVICE] Ready to send emails to users and admins');
     }
   }
 
@@ -32,6 +38,11 @@ class EmailService {
    */
   async sendContactFormConfirmation(contactData) {
     try {
+      console.log('📧 [EMAIL] Preparing to send contact form confirmation email...');
+      console.log('📧 [EMAIL] To:', contactData.email);
+      console.log('📧 [EMAIL] From:', this.fromEmail);
+      console.log('📧 [EMAIL] Recipient Name:', `${contactData.firstName} ${contactData.lastName}`);
+      
       const sendSmtpEmail = new brevo.SendSmtpEmail();
       
       sendSmtpEmail.subject = 'Thank you for contacting Next Stop China!';
@@ -39,11 +50,17 @@ class EmailService {
       sendSmtpEmail.sender = { name: 'Next Stop China', email: this.fromEmail };
       sendSmtpEmail.to = [{ email: contactData.email, name: `${contactData.firstName} ${contactData.lastName}` }];
 
+      console.log('📧 [EMAIL] Sending contact form confirmation email via Brevo...');
       const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
-      console.log('Contact form confirmation email sent:', result);
+      console.log('✅ [EMAIL] Contact form confirmation email sent successfully!');
+      console.log('📧 [EMAIL] Brevo Response:', JSON.stringify(result, null, 2));
       return result;
     } catch (error) {
-      console.error('Error sending contact form confirmation email:', error);
+      console.error('❌ [EMAIL] Error sending contact form confirmation email:', error);
+      console.error('❌ [EMAIL] Error details:', error.message);
+      if (error.response) {
+        console.error('❌ [EMAIL] Error response:', JSON.stringify(error.response.body, null, 2));
+      }
       throw error;
     }
   }
@@ -53,6 +70,11 @@ class EmailService {
    */
   async sendContactFormNotificationToAdmin(contactData) {
     try {
+      console.log('📧 [EMAIL] Preparing to send contact form notification to admin...');
+      console.log('📧 [EMAIL] To Admin:', this.adminEmail);
+      console.log('📧 [EMAIL] From:', this.fromEmail);
+      console.log('📧 [EMAIL] Submission From:', `${contactData.firstName} ${contactData.lastName} (${contactData.email})`);
+      
       const sendSmtpEmail = new brevo.SendSmtpEmail();
       
       sendSmtpEmail.subject = `New Contact Form Submission - ${contactData.firstName} ${contactData.lastName}`;
@@ -60,11 +82,17 @@ class EmailService {
       sendSmtpEmail.sender = { name: 'Next Stop China', email: this.fromEmail };
       sendSmtpEmail.to = [{ email: this.adminEmail, name: 'Admin' }];
 
+      console.log('📧 [EMAIL] Sending contact form notification email to admin via Brevo...');
       const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
-      console.log('Contact form notification email sent to admin:', result);
+      console.log('✅ [EMAIL] Contact form notification email sent to admin successfully!');
+      console.log('📧 [EMAIL] Brevo Response:', JSON.stringify(result, null, 2));
       return result;
     } catch (error) {
-      console.error('Error sending contact form notification to admin:', error);
+      console.error('❌ [EMAIL] Error sending contact form notification to admin:', error);
+      console.error('❌ [EMAIL] Error details:', error.message);
+      if (error.response) {
+        console.error('❌ [EMAIL] Error response:', JSON.stringify(error.response.body, null, 2));
+      }
       throw error;
     }
   }
@@ -74,6 +102,12 @@ class EmailService {
    */
   async sendApplicationFormConfirmation(applicationData) {
     try {
+      console.log('📧 [EMAIL] Preparing to send application form confirmation email...');
+      console.log('📧 [EMAIL] To:', applicationData.personalInfo.email);
+      console.log('📧 [EMAIL] From:', this.fromEmail);
+      console.log('📧 [EMAIL] Recipient Name:', `${applicationData.personalInfo.firstName} ${applicationData.personalInfo.lastName}`);
+      console.log('📧 [EMAIL] Program:', applicationData.program.preferredProgram);
+      
       const sendSmtpEmail = new brevo.SendSmtpEmail();
       
       sendSmtpEmail.subject = 'Application Received - Next Stop China';
@@ -81,11 +115,17 @@ class EmailService {
       sendSmtpEmail.sender = { name: 'Next Stop China', email: this.fromEmail };
       sendSmtpEmail.to = [{ email: applicationData.personalInfo.email, name: `${applicationData.personalInfo.firstName} ${applicationData.personalInfo.lastName}` }];
 
+      console.log('📧 [EMAIL] Sending application form confirmation email via Brevo...');
       const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
-      console.log('Application form confirmation email sent:', result);
+      console.log('✅ [EMAIL] Application form confirmation email sent successfully!');
+      console.log('📧 [EMAIL] Brevo Response:', JSON.stringify(result, null, 2));
       return result;
     } catch (error) {
-      console.error('Error sending application form confirmation email:', error);
+      console.error('❌ [EMAIL] Error sending application form confirmation email:', error);
+      console.error('❌ [EMAIL] Error details:', error.message);
+      if (error.response) {
+        console.error('❌ [EMAIL] Error response:', JSON.stringify(error.response.body, null, 2));
+      }
       throw error;
     }
   }
@@ -95,6 +135,13 @@ class EmailService {
    */
   async sendApplicationFormNotificationToAdmin(applicationData) {
     try {
+      console.log('📧 [EMAIL] Preparing to send application form notification to admin...');
+      console.log('📧 [EMAIL] To Admin:', this.adminEmail);
+      console.log('📧 [EMAIL] From:', this.fromEmail);
+      console.log('📧 [EMAIL] Application From:', `${applicationData.personalInfo.firstName} ${applicationData.personalInfo.lastName} (${applicationData.personalInfo.email})`);
+      console.log('📧 [EMAIL] Program:', applicationData.program.preferredProgram);
+      console.log('📧 [EMAIL] Degree Level:', applicationData.program.degreeLevel);
+      
       const sendSmtpEmail = new brevo.SendSmtpEmail();
       
       sendSmtpEmail.subject = `New Application Submission - ${applicationData.personalInfo.firstName} ${applicationData.personalInfo.lastName}`;
@@ -102,11 +149,17 @@ class EmailService {
       sendSmtpEmail.sender = { name: 'Next Stop China', email: this.fromEmail };
       sendSmtpEmail.to = [{ email: this.adminEmail, name: 'Admin' }];
 
+      console.log('📧 [EMAIL] Sending application form notification email to admin via Brevo...');
       const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
-      console.log('Application form notification email sent to admin:', result);
+      console.log('✅ [EMAIL] Application form notification email sent to admin successfully!');
+      console.log('📧 [EMAIL] Brevo Response:', JSON.stringify(result, null, 2));
       return result;
     } catch (error) {
-      console.error('Error sending application form notification to admin:', error);
+      console.error('❌ [EMAIL] Error sending application form notification to admin:', error);
+      console.error('❌ [EMAIL] Error details:', error.message);
+      if (error.response) {
+        console.error('❌ [EMAIL] Error response:', JSON.stringify(error.response.body, null, 2));
+      }
       throw error;
     }
   }
@@ -116,6 +169,10 @@ class EmailService {
    */
   async sendNewsletterConfirmation(email) {
     try {
+      console.log('📧 [EMAIL] Preparing to send newsletter confirmation email...');
+      console.log('📧 [EMAIL] To:', email);
+      console.log('📧 [EMAIL] From:', this.fromEmail);
+      
       const sendSmtpEmail = new brevo.SendSmtpEmail();
       
       sendSmtpEmail.subject = 'Welcome to Next Stop China Newsletter!';
@@ -123,11 +180,17 @@ class EmailService {
       sendSmtpEmail.sender = { name: 'Next Stop China', email: this.fromEmail };
       sendSmtpEmail.to = [{ email: email, name: 'Subscriber' }];
 
+      console.log('📧 [EMAIL] Sending newsletter confirmation email via Brevo...');
       const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
-      console.log('Newsletter confirmation email sent:', result);
+      console.log('✅ [EMAIL] Newsletter confirmation email sent successfully!');
+      console.log('📧 [EMAIL] Brevo Response:', JSON.stringify(result, null, 2));
       return result;
     } catch (error) {
-      console.error('Error sending newsletter confirmation email:', error);
+      console.error('❌ [EMAIL] Error sending newsletter confirmation email:', error);
+      console.error('❌ [EMAIL] Error details:', error.message);
+      if (error.response) {
+        console.error('❌ [EMAIL] Error response:', JSON.stringify(error.response.body, null, 2));
+      }
       throw error;
     }
   }
@@ -137,6 +200,12 @@ class EmailService {
    */
   async sendNewsletterNotificationToAdmin(subscriptionData) {
     try {
+      console.log('📧 [EMAIL] Preparing to send newsletter notification to admin...');
+      console.log('📧 [EMAIL] To Admin:', this.adminEmail);
+      console.log('📧 [EMAIL] From:', this.fromEmail);
+      console.log('📧 [EMAIL] New Subscriber:', subscriptionData.email);
+      console.log('📧 [EMAIL] Source:', subscriptionData.source || 'homepage');
+      
       const sendSmtpEmail = new brevo.SendSmtpEmail();
       
       sendSmtpEmail.subject = `New Newsletter Subscription - ${subscriptionData.email}`;
@@ -144,11 +213,17 @@ class EmailService {
       sendSmtpEmail.sender = { name: 'Next Stop China', email: this.fromEmail };
       sendSmtpEmail.to = [{ email: this.adminEmail, name: 'Admin' }];
 
+      console.log('📧 [EMAIL] Sending newsletter notification email to admin via Brevo...');
       const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
-      console.log('Newsletter notification email sent to admin:', result);
+      console.log('✅ [EMAIL] Newsletter notification email sent to admin successfully!');
+      console.log('📧 [EMAIL] Brevo Response:', JSON.stringify(result, null, 2));
       return result;
     } catch (error) {
-      console.error('Error sending newsletter notification to admin:', error);
+      console.error('❌ [EMAIL] Error sending newsletter notification to admin:', error);
+      console.error('❌ [EMAIL] Error details:', error.message);
+      if (error.response) {
+        console.error('❌ [EMAIL] Error response:', JSON.stringify(error.response.body, null, 2));
+      }
       throw error;
     }
   }
